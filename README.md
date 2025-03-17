@@ -81,7 +81,7 @@ This project follows a clean and organized structure, ensuring maintainability a
 1. Clone the repository:
 
 ```sh
-git clone https://github.com/Rafli-Dewanto/be-gdg-neo.git note-app-backend
+git clone https://github.com/Rafli-Dewanto/be-bootcamp-kilat.git note-app-backend
 ```
 
 2. Navigate to the project directory:
