@@ -5,7 +5,7 @@ import createError, { HttpError } from "http-errors";
 import logger from "morgan";
 import { authorize } from "./middleware/auth";
 import authRouter from "./routes/auth.route";
-import notesRouter from "./routes/note.route";
+import complaintsRouter from "./routes/complaint.route";
 import { setupSwagger } from "./utils/swagger";
 import dotenv from "dotenv";
 
@@ -21,7 +21,7 @@ app.use(cors({ origin: "*" }));
 
 // routes
 app.use("/api/auth", authRouter);
-app.use("/api/notes", authorize, notesRouter);
+app.use("/api/complaints", authorize, complaintsRouter);
 
 // swagger
 setupSwagger(app);
