@@ -101,10 +101,17 @@ class ComplaintController {
         });
       }
 
+      if (!req.file || !req.file.path) {
+        return res.status(400).json({
+          success: false,
+          message: "Photo is required",
+        });
+      }
+
       const result = await this.complaintService.createComplaint({
         location: req.body.location,
         description: req.body.description,
-        photo: req.body.photo,
+        photo: req.file.path,
         // status: req.body.status,
         email: req.user.email,
       });
