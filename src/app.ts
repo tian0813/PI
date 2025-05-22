@@ -5,6 +5,8 @@ import createError, { HttpError } from "http-errors";
 import logger from "morgan";
 import { authorize } from "./middleware/auth";
 import authRouter from "./routes/auth.route";
+import adminRoutes from "./routes/admin.route";
+
 import complaintsRouter from "./routes/complaint.route";
 import { setupSwagger } from "./utils/swagger";
 import dotenv from "dotenv";
@@ -13,16 +15,16 @@ dotenv.config();
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(logger("dev"));
 app.use(cookieParser());
 app.use(cors({ origin: "*" }));
 
 // routes
 app.use("/api/auth", authRouter);
+app.use("/api/admin", adminRoutes);
 app.use("/api/complaints", authorize, complaintsRouter);
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
 // swagger
 setupSwagger(app);

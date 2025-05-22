@@ -14,7 +14,7 @@ export default class AuthController {
 
   async signUp(req: Request, res: Response) {
     try {
-      const { name, email, password } = await req.body;
+      const { name, email, password, role } = await req.body;
 
       if (!name || !email || !password) {
         return res.status(400).json({
@@ -27,7 +27,7 @@ export default class AuthController {
         id,
         email: userEmail,
         error,
-      } = await this.authService.signUp({ email, name, password });
+      } = await this.authService.signUp({ email, name, password, role });
       if (error) {
         return res.status(500).json({
           success: false,
@@ -91,7 +91,7 @@ export default class AuthController {
         });
       }
 
-      const { email, id } = decoded;
+      const { email, id, role } = decoded;
       if (!email) {
         return res.status(400).json({
           success: false,
@@ -99,7 +99,7 @@ export default class AuthController {
         });
       }
 
-      const newToken = generateToken(email, id);
+      const newToken = generateToken(email, id, role);
       return res.status(200).json({
         success: true,
         message: "Success",

@@ -11,8 +11,13 @@ export default class UserRepository {
 
   async createUser(user: SignUpDTO) {
     try {
+      const dataToCreate = {
+        ...user,
+        role: user.role || "USER",
+      };
+      
       return await this.prisma.user.create({
-        data: user,
+        data: dataToCreate,
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {

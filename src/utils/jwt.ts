@@ -8,8 +8,8 @@ const SECRET_KEY = process.env.JWT_SECRET as string;
  * @param id - The id of the user to store in the token.
  * @returns A signed JWT token.
  */
-export const generateToken = (email: string, id: number): string => {
-  const payload = { email, id };
+export const generateToken = (email: string, id: number, role?: string): string => {
+  const payload = { email, id, role };
   const options = { expiresIn: 3600 };
 
   return jwt.sign(payload, SECRET_KEY, options);
@@ -17,11 +17,12 @@ export const generateToken = (email: string, id: number): string => {
 
 export const verifyToken = (
   token: string
-): { email: string; id: number } | null => {
+): { email: string; id: number, role?: string } | null => {
   try {
     const decoded = jwt.verify(token, SECRET_KEY) as {
       email: string;
       id: number;
+      role: string;
     };
     return { ...decoded };
   } catch (err) {

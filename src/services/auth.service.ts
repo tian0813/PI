@@ -25,6 +25,7 @@ export default class AuthService {
       const { id, email } = await this.userRepository.createUser({
         ...user,
         password: hashPassword,
+        role: user.role || "USER",
       });
 
       return {
@@ -59,6 +60,7 @@ export default class AuthService {
         {
           email: user.email,
           id: user.id,
+          role: user.role,
         },
         SECRET_KEY,
         {
