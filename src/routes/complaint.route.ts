@@ -3,6 +3,7 @@ import ComplaintController from "../controllers/complaint.controller";
 import ComplaintService from "../services/complaint.service";
 import ComplaintRepository from "../repositories/complaint.repository";
 import { PrismaClient } from "@prisma/client";
+import upload from "../middleware/upload";
 
 const router = Router();
 
@@ -17,7 +18,7 @@ router.get("/", (req, res, next) =>
 router.get("/:id", (req, res, next) =>
   complaintController.getComplaintById(req, res, next)
 );
-router.post("/", (req, res, next) =>
+router.post("/", upload.single("photo"), (req, res, next) =>
   complaintController.createComplaint(req, res, next)
 );
 router.put("/:id", (req, res, next) =>

@@ -4,6 +4,9 @@ import { AuthRequest } from "../middleware/auth";
 import ComplaintService from "../services/complaint.service";
 import { ComplaintFilters } from "../types/complaint";
 import { PaginationParams } from "../types/pagination";
+import { cloudinary } from "../utils/cloudinary";
+import streamifier from "streamifier";
+
 
 class ComplaintController {
   private complaintService: ComplaintService;
@@ -101,17 +104,38 @@ class ComplaintController {
         });
       }
 
-      if (!req.file || !req.file.path) {
+      if (!req.file || !req.file.buffer) {
+        console.log("FILE:", req.file);
         return res.status(400).json({
           success: false,
           message: "Photo is required",
         });
       }
 
+      // Upload ke Cloudinary dari buffer
+      const streamUpload = (buffer: Buffer): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "complaints" },
+            (error, result) => {
+              if (result?.secure_url) {
+                resolve(result.secure_url);
+              } else {
+                reject(error || new Error("Upload failed"));
+              }
+            }
+          );
+          streamifier.createReadStream(buffer).pipe(stream);
+        });
+      };
+
+      const uploadedImageUrl = await streamUpload(req.file.buffer);
+
       const result = await this.complaintService.createComplaint({
         location: req.body.location,
         description: req.body.description,
-        photo: req.file.path,
+        photo: uploadedImageUrl,
+        // photo: req.body.photo,
         // status: req.body.status,
         email: req.user.email,
       });
