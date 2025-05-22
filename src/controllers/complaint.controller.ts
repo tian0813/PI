@@ -7,7 +7,6 @@ import { PaginationParams } from "../types/pagination";
 import { cloudinary } from "../utils/cloudinary";
 import streamifier from "streamifier";
 
-
 class ComplaintController {
   private complaintService: ComplaintService;
 
@@ -160,23 +159,48 @@ class ComplaintController {
   async updateComplaint(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        return res.status(500).json({
-          success: false,
-          message: "Unauthorized",
-        });
+        return res
+          .status(500)
+          .json({ success: false, message: "Unauthorized" });
       }
+
+      let photoUrl;
+
+      if (req.file && req.file.buffer) {
+        // Upload foto baru ke cloudinary
+        const streamUpload = (buffer: Buffer): Promise<string> => {
+          return new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: "complaints" },
+              (error, result) => {
+                if (result?.secure_url) {
+                  resolve(result.secure_url);
+                } else {
+                  reject(error || new Error("Upload failed"));
+                }
+              }
+            );
+            streamifier.createReadStream(buffer).pipe(stream);
+          });
+        };
+
+        photoUrl = await streamUpload(req.file.buffer);
+      }
+
+      // Gabungkan data update, kalau ada foto baru masukkan URL-nya
+      const updateData = {
+        ...req.body,
+        ...(photoUrl ? { photo: photoUrl } : {}),
+      };
 
       const result = await this.complaintService.updateComplaint(
         req.user.id,
         Number(req.params.id),
-        req.body
+        updateData
       );
 
       if (typeof result === "string") {
-        return res.status(400).json({
-          success: false,
-          message: result,
-        });
+        return res.status(400).json({ success: false, message: result });
       }
 
       return res.status(200).json({

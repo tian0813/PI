@@ -21,7 +21,7 @@ router.get("/:id", (req, res, next) =>
 router.post("/", upload.single("photo"), (req, res, next) =>
   complaintController.createComplaint(req, res, next)
 );
-router.put("/:id", (req, res, next) =>
+router.put("/:id", upload.single("photo"), (req, res, next) =>
   complaintController.updateComplaint(req, res, next)
 );
 router.patch("/:id", (req, res, next) =>
